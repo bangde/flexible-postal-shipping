@@ -711,31 +711,31 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     <th style="width: 2%;"></th>
                     <th style="width: 9%;">
                     <?php esc_html_e('Label', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Internal label. Rules are prioritized from Top to Bottom.', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Internal label for your reference. Rules are prioritized from Top to Bottom (First Match Wins).', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 10%;">
                     <?php esc_html_e('Country', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('2-letter country code (e.g. JP, CN).', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('2-letter country code (e.g. JP, CN). Use * for Any Country.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 10%;">
                     <?php esc_html_e('Province(s)/States', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Enter * for all, or select specific states.', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Specific states or provinces. Leave as * for entire country. Supports comma-separated lists.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 9%;">
                     <?php esc_html_e('Postcode/Zip', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Enter specific codes, ranges (1000...2000), or wildcards (90*).', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Filter by zip code. Supports exact codes, ranges (1000...2000), or wildcards (90*).', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 9%;">
                     <?php esc_html_e('Shipping Class', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Rule applies only if cart contains this class.', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Apply rule only if cart contains items of this shipping class.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 8%;">
                     <?php esc_html_e('Delivery', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Text displayed to customer (e.g. 3-7 Days).', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Text displayed to customer at checkout (e.g. 3-7 Days).', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 10%;">
                     <?php esc_html_e('Weight (kg)', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Apply rule only if cart weight is within this range.', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Min - Max Weight. Rule applies only if cart weight falls within this range.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 9%;" class="asia-header-total">
                     <span class="asia-header-label">
@@ -744,15 +744,15 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         if ( ! empty( $currency_symbol ) ) echo ' (' . esc_html( $currency_flag . ' ' . $currency_symbol ) . ')';
                     ?>
                     </span>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Apply rule only if cart total value is within this range.', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Min - Max Cart Total. Rule applies only if cart value falls within this range.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 8%;">
                     <?php esc_html_e('Qty (Min-Max)', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Apply rule only if total item count is within this range. Leave empty or use * for any quantity.', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Min - Max Item Quantity. Rule applies only if total item count falls within this range.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 6%;">
                     <?php esc_html_e('Base Kg', 'Asia-Postal-Shipping'); ?>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Weight included in the Base Cost.', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('The weight amount already included in the Base Cost. E.g., if the first 1kg is a flat fee, enter 1.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 14%;" class="asia-header-cost">
                     <span class="asia-header-label">
@@ -761,7 +761,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         if ( ! empty( $currency_symbol ) ) echo ' (' . esc_html( $currency_flag . ' ' . $currency_symbol ) . ')';
                     ?>
                     </span>
-                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Formula: Base Cost + (Per Kg * (Total Weight - Base Weight))', 'Asia-Postal-Shipping'); ?>"></span>
+                    <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Formula: (Base Cost + (Per Kg * (Total Weight - Base Weight))) * Exchange Rate', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 6%;"></th>
                     </tr>
@@ -816,6 +816,33 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     </div>
                     <button type="button" class="button button-primary" id="add_asia_rule"><?php esc_html_e( 'Add New Rule', 'Asia-Postal-Shipping' ); ?></button>
                     </div>
+                    
+                    <!-- LIVE TEST CALCULATOR -->
+                    <div class="asia-test-calculator" style="margin-top: 30px; padding: 20px; background: #fff; border: 1px solid #ccd0d4; border-left: 4px solid #2271b1;">
+                        <h3><span class="dashicons dashicons-calculator"></span> <?php esc_html_e('Live Test Calculator', 'Asia-Postal-Shipping'); ?></h3>
+                        <p class="description"><?php esc_html_e('Test your rules instantly without saving or going to checkout. Values are calculated based on the current table data above and the exchange rate.', 'Asia-Postal-Shipping'); ?></p>
+                        
+                        <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                            <div>
+                                <label for="asia_test_weight" style="font-weight:bold; display:block;"><?php esc_html_e('Weight (kg)', 'Asia-Postal-Shipping'); ?></label>
+                                <input type="number" id="asia_test_weight" step="0.01" value="1" style="width: 100px;">
+                            </div>
+                            <div>
+                                <label for="asia_test_country" style="font-weight:bold; display:block;"><?php esc_html_e('Country Code', 'Asia-Postal-Shipping'); ?></label>
+                                <input type="text" id="asia_test_country" value="US" style="width: 60px; text-transform: uppercase;" placeholder="US">
+                            </div>
+                            <div>
+                                <button type="button" id="asia_test_btn" class="button button-secondary"><?php esc_html_e('Calculate Cost', 'Asia-Postal-Shipping'); ?></button>
+                            </div>
+                        </div>
+                        
+                        <div id="asia_test_result" style="margin-top: 15px; font-weight: bold; font-size: 1.2em; color: #2271b1; display: none;">
+                            <?php esc_html_e('Result:', 'Asia-Postal-Shipping'); ?> <span id="asia_test_cost"></span>
+                        </div>
+                        <div id="asia_test_debug" style="margin-top: 5px; font-size: 0.9em; color: #666; display: none;"></div>
+                    </div>
+                    <!-- END CALCULATOR -->
+
                     <input type="hidden" name="<?php echo esc_attr( $field_key ); ?>" id="<?php echo esc_attr( $field_key ); ?>" value="<?php echo esc_attr( $value ); ?>">
 
                     <script type="text/javascript">
@@ -1338,6 +1365,68 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                 alert('No rules selected.');
                             }
                         });
+
+                        // --- LIVE CALCULATOR LOGIC ---
+                        $('#asia_test_btn').click(function() {
+                            var testWeight = parseFloat($('#asia_test_weight').val()) || 0;
+                            var testCountry = $('#asia_test_country').val().toUpperCase().trim();
+                            var exchangeRate = parseFloat($('#' + exchange_rate_field_id).val());
+                            if(isNaN(exchangeRate) || exchangeRate <= 0) exchangeRate = 1;
+
+                            var matchedRule = null;
+                            var matchedCost = 0;
+
+                            // Iterate through visible table rows
+                            $('#asia_post_rules_tbody tr').each(function() {
+                                var row = $(this);
+                                
+                                // 1. Check Country
+                                var ruleCountries = row.find('.rule-country-input').val();
+                                // Handle Select2 value which might be array or string
+                                if (Array.isArray(ruleCountries)) {
+                                    // if array contains *, it matches all
+                                    if (ruleCountries.indexOf('*') === -1 && ruleCountries.indexOf(testCountry) === -1) return true; // skip to next
+                                } else {
+                                    // String handling
+                                    var cStr = (ruleCountries || '*').toUpperCase();
+                                    if (cStr !== '*' && cStr.split(',').map(s => s.trim()).indexOf(testCountry) === -1) return true;
+                                }
+
+                                // 2. Check Weight
+                                var minW = parseFloat(row.find('input[name="rule_min_weight[]"]').val()) || 0;
+                                var maxWStr = row.find('input[name="rule_max_weight[]"]').val();
+                                var maxW = (maxWStr === '' || maxWStr === '*') ? 999999 : parseFloat(maxWStr);
+                                
+                                if (testWeight < minW || testWeight > maxW) return true;
+
+                                // 3. Calculate Cost (Match Found!)
+                                var baseCost = parseFloat(row.find('input[name="rule_base_cost[]"]').val()) || 0;
+                                var perKg = parseFloat(row.find('input[name="rule_per_kg[]"]').val()) || 0;
+                                var baseKg = parseFloat(row.find('input[name="rule_base_weight[]"]').val()) || 0;
+
+                                var chargeableExcess = Math.max(0, testWeight - baseKg);
+                                var carrierCost = baseCost + (perKg * chargeableExcess);
+                                matchedCost = carrierCost * exchangeRate;
+                                matchedRule = row.find('input[name="rule_label[]"]').val();
+                                return false; // Break loop
+                            });
+
+                            var $result = $('#asia_test_result');
+                            var $debug = $('#asia_test_debug');
+                            $result.show();
+                            $debug.show();
+
+                            if (matchedRule) {
+                                $('#asia_test_cost').text(matchedCost.toFixed(2) + ' ' + asia_store_currency);
+                                $debug.html('Matched Rule: <strong>' + matchedRule + '</strong><br>Formula: (' + matchedCost.toFixed(2)/exchangeRate + ' [Carrier Cost] * ' + exchangeRate + ' [Exch. Rate])');
+                                $result.css('color', '#2271b1'); // Success Blue
+                            } else {
+                                $('#asia_test_cost').text('No Match Found');
+                                $debug.html('No rule covered this country/weight combination.');
+                                $result.css('color', '#d63638'); // Error Red
+                            }
+                        });
+                        // --- END CALCULATOR ---
 
                         // Init existing rows
                         $('.asia-rule-row').each(function() {
