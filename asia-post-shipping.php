@@ -3,7 +3,7 @@
  * Plugin Name: Asia Postal & Table Rate Shipping (Fixed)
  * Plugin URI:  https://example.com/asia-post-shipping
  * Description: A specialized shipping method for Asian Postal Carriers (Japan Post, China Post, Pos Indonesia, etc.) featuring a tree-table rate logic engine.
- * Version:     2.8.2
+ * Version:     2.8.3
  * Author:      S.J Consulting Group Asia
  * Author URI:  https://google.com
  * Text Domain: Asia-Postal-Shipping
@@ -703,11 +703,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     <?php esc_html_e('Weight (kg)', 'Asia-Postal-Shipping'); ?>
                     <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Apply rule only if cart weight is within this range.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
-                    <th style="width: 9%;">
+                    <th style="width: 9%;" class="asia-header-total">
+                    <span class="asia-header-label">
                     <?php 
                         esc_html_e('Total', 'Asia-Postal-Shipping');
                         if ( ! empty( $currency_symbol ) ) echo ' (' . esc_html( $currency_symbol ) . ')';
                     ?>
+                    </span>
                     <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Apply rule only if cart total value is within this range.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 8%;">
@@ -718,11 +720,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     <?php esc_html_e('Base Kg', 'Asia-Postal-Shipping'); ?>
                     <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Weight included in the Base Cost.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
-                    <th style="width: 14%;">
+                    <th style="width: 14%;" class="asia-header-cost">
+                    <span class="asia-header-label">
                     <?php 
                         esc_html_e('Cost', 'Asia-Postal-Shipping');
                         if ( ! empty( $currency_symbol ) ) echo ' (' . esc_html( $currency_symbol ) . ')';
                     ?>
+                    </span>
                     <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Formula: Base Cost + (Per Kg * (Total Weight - Base Weight))', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 6%;"></th>
@@ -750,13 +754,13 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     <td><div class="asia-input-group"><input type="number" step="1" class="asia-rule-input asia-rule-small" name="rule_min_qty[]" value="<?php echo esc_attr( isset($rule['min_qty']) ? $rule['min_qty'] : '' ); ?>" placeholder="0"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_qty[]" value="<?php echo esc_attr( isset($rule['max_qty']) ? $rule['max_qty'] : '' ); ?>" placeholder="*"></div></td>
                     <td><input type="number" step="0.01" class="asia-rule-input" name="rule_base_weight[]" value="<?php echo esc_attr( isset($rule['base_weight']) ? $rule['base_weight'] : '0' ); ?>"></td>
                     <td><div style="display:grid; gap:5px;">
-                    <div class="asia-input-group"><span style="white-space:nowrap;">
+                    <div class="asia-input-group"><span style="white-space:nowrap;" class="asia-label-base">
                     <?php 
                         esc_html_e( 'Base', 'Asia-Postal-Shipping' );
                         echo ( ! empty( $currency_symbol ) ) ? ' (' . esc_html( $currency_symbol ) . '):' : ':';
                     ?>
                     </span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_base_cost[]" value="<?php echo esc_attr( $rule['base_cost'] ); ?>"></div>
-                    <div class="asia-input-group"><span style="white-space:nowrap;">
+                    <div class="asia-input-group"><span style="white-space:nowrap;" class="asia-label-perkg">
                     <?php 
                         esc_html_e( '+ /kg', 'Asia-Postal-Shipping' );
                         echo ( ! empty( $currency_symbol ) ) ? ' (' . esc_html( $currency_symbol ) . '):' : ':';
@@ -786,6 +790,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     var asia_carrier_map = <?php echo json_encode( $flat_carrier_map ); ?>; // Use Flat Map!
                     var asia_presets = <?php echo json_encode( $presets ); ?>;
                     var asia_shipping_classes = <?php echo json_encode( $wc_shipping_classes ); ?>;
+                    var asia_currencies = <?php echo json_encode( $carrier_currencies ); ?>;
 
                     // DYNAMIC IDs from PHP
                     var carrier_field_id = '<?php echo esc_js( $id_prefix . 'carrier_brand' ); ?>';
@@ -796,6 +801,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     var js_currency_symbol = '<?php echo esc_js( $currency_symbol ); ?>';
                     var js_base_label = '<?php echo esc_js( __( 'Base', 'Asia-Postal-Shipping' ) ); ?>';
                     var js_per_kg_label = '<?php echo esc_js( __( '+ /kg', 'Asia-Postal-Shipping' ) ); ?>';
+                    var js_total_label = '<?php echo esc_js( __( 'Total', 'Asia-Postal-Shipping' ) ); ?>';
+                    var js_cost_label = '<?php echo esc_js( __( 'Cost', 'Asia-Postal-Shipping' ) ); ?>';
                     
                     if ( js_currency_symbol !== '' ) {
                         js_base_label += ' (' + js_currency_symbol + '):';
@@ -813,6 +820,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         preset_confirm: '<?php echo esc_js( __( 'Warning: This will replace all current rules with the standard zones. \n\nPro Tip: Export your current rules to CSV first as a backup.\n\nContinue?', 'Asia-Postal-Shipping' ) ); ?>',
                         base: js_base_label,
                         per_kg: js_per_kg_label,
+                        total: js_total_label,
+                        cost: js_cost_label,
                         duplicate_tip: '<?php echo esc_js( __( 'Duplicate Rule', 'Asia-Postal-Shipping' ) ); ?>',
                         remove_tip: '<?php echo esc_js( __( 'Remove Rule', 'Asia-Postal-Shipping' ) ); ?>',
                         bulk_delete_confirm: '<?php echo esc_js( __( 'Are you sure you want to delete the selected rules?', 'Asia-Postal-Shipping' ) ); ?>'
@@ -830,12 +839,40 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                         function toggleCustomLabel() {
                             // FUZZY SELECTOR: Finds select ending in carrier_brand
-                            // Use a filter to check end of ID
                             var $select = $('select').filter(function() {
                                 return this.id.match(/carrier_brand$/);
                             });
 
                             var selected = $select.val();
+
+                            // Update Currency Symbols Live
+                            var symbol = asia_currencies[selected] || '';
+                            var newTotalText = asia_i18n.total;
+                            var newCostText = asia_i18n.cost;
+                            var newBaseLabel = '<?php echo esc_js( __( 'Base', 'Asia-Postal-Shipping' ) ); ?>';
+                            var newPerKgLabel = '<?php echo esc_js( __( '+ /kg', 'Asia-Postal-Shipping' ) ); ?>';
+
+                            if ( symbol !== '' ) {
+                                newTotalText += ' (' + symbol + ')';
+                                newCostText += ' (' + symbol + ')';
+                                newBaseLabel += ' (' + symbol + '):';
+                                newPerKgLabel += ' (' + symbol + '):';
+                            } else {
+                                newBaseLabel += ':';
+                                newPerKgLabel += ':';
+                            }
+
+                            // Update Headers
+                            $('.asia-header-total .asia-header-label').text(newTotalText);
+                            $('.asia-header-cost .asia-header-label').text(newCostText);
+
+                            // Update Rows (Live)
+                            $('.asia-label-base').text(newBaseLabel);
+                            $('.asia-label-perkg').text(newPerKgLabel);
+
+                            // Update global i18n for new rows added via JS
+                            asia_i18n.base = newBaseLabel;
+                            asia_i18n.per_kg = newPerKgLabel;
 
                             // Also find custom label and icon inputs similarly
                             var $customLabelInput = $('input').filter(function() {
@@ -1049,7 +1086,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             '<td><div class="asia-input-group"><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_min_total[]" placeholder="0" value="' + esc_attr(d.min_total) + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_total[]" placeholder="*" value="' + esc_attr(d.max_total) + '"></div></td>' +
                             '<td><div class="asia-input-group"><input type="number" step="1" class="asia-rule-input asia-rule-small" name="rule_min_qty[]" placeholder="0" value="' + esc_attr(d.min_qty) + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_qty[]" placeholder="*" value="' + esc_attr(d.max_qty) + '"></div></td>' +
                             '<td><input type="number" step="0.01" class="asia-rule-input" name="rule_base_weight[]" value="' + esc_attr(d.base_weight) + '"></td>' +
-                            '<td><div style="display:grid; gap:5px;"><div class="asia-input-group"><span style="white-space:nowrap;">' + asia_i18n.base + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_base_cost[]" value="' + esc_attr(d.base_cost) + '"></div><div class="asia-input-group"><span style="white-space:nowrap;">' + asia_i18n.per_kg + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_per_kg[]" value="' + esc_attr(d.per_kg) + '"></div></div></td>' +
+                            '<td><div style="display:grid; gap:5px;"><div class="asia-input-group"><span style="white-space:nowrap;" class="asia-label-base">' + asia_i18n.base + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_base_cost[]" value="' + esc_attr(d.base_cost) + '"></div><div class="asia-input-group"><span style="white-space:nowrap;" class="asia-label-perkg">' + asia_i18n.per_kg + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_per_kg[]" value="' + esc_attr(d.per_kg) + '"></div></div></td>' +
                             '<td class="asia-action-cell">' +
                             '<span class="dashicons dashicons-admin-page asia-duplicate-btn duplicate-row tips" data-tip="' + asia_i18n.duplicate_tip + '"></span>' +
                             '<span class="dashicons dashicons-trash asia-remove-btn remove-row tips" data-tip="' + asia_i18n.remove_tip + '"></span>' +
