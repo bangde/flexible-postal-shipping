@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Asia Postal & Table Rate Shipping
+ * Plugin Name: Asia Postal & Table Rate Shipping (Fixed)
  * Plugin URI:  https://example.com/asia-post-shipping
  * Description: A specialized shipping method for Asian Postal Carriers (Japan Post, China Post, Pos Indonesia, etc.) featuring a tree-table rate logic engine.
- * Version:     2.8.0
+ * Version:     2.8.1
  * Author:      S.J Consulting Group Asia
  * Author URI:  https://google.com
  * Text Domain: Asia-Postal-Shipping
@@ -44,8 +44,12 @@ function asia_post_admin_scripts() {
  */
 add_action( 'admin_notices', 'asia_post_admin_notices' );
 function asia_post_admin_notices() {
-    if ( isset( $_GET['asia_import'] ) && $_GET['asia_import'] === 'success' ) {
-        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( '✅ Shipping rules imported successfully.', 'Asia-Postal-Shipping' ) . '</p></div>';
+    if ( isset( $_GET['asia_import'] ) ) {
+        if ( $_GET['asia_import'] === 'success' ) {
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( '✅ Shipping rules imported successfully.', 'Asia-Postal-Shipping' ) . '</p></div>';
+        } elseif ( $_GET['asia_import'] === 'error' ) {
+            echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( '❌ Error: File upload failed or invalid file.', 'Asia-Postal-Shipping' ) . '</p></div>';
+        }
     }
 }
 
@@ -67,30 +71,30 @@ function asia_get_carriers() {
     return array(
         'East Asia' => array(
             'china_post'    => array('code' => 'CN', 'label' => __( '🇨🇳 China Post', 'Asia-Postal-Shipping' )),
-                             'chunghwa_post' => array('code' => 'TW', 'label' => __( '🇹🇼 Chunghwa Post (Taiwan)', 'Asia-Postal-Shipping' )),
-                             'hongkong_post' => array('code' => 'HK', 'label' => __( '🇭🇰 Hong Kong Post', 'Asia-Postal-Shipping' )),
-                             'japan_post'    => array('code' => 'JP', 'label' => __( '🇯🇵 Japan Post', 'Asia-Postal-Shipping' )),
-                             'korea_post_kr' => array('code' => 'KR', 'label' => __( '🇰🇷 Korea Post (South)', 'Asia-Postal-Shipping' )),
-                             'macau_post'    => array('code' => 'MO', 'label' => __( '🇲🇴 CTT Macau', 'Asia-Postal-Shipping' )),
-                             'mongol_post'   => array('code' => 'MN', 'label' => __( '🇲🇳 Mongol Post', 'Asia-Postal-Shipping' )),
+            'chunghwa_post' => array('code' => 'TW', 'label' => __( '🇹🇼 Chunghwa Post (Taiwan)', 'Asia-Postal-Shipping' )),
+            'hongkong_post' => array('code' => 'HK', 'label' => __( '🇭🇰 Hong Kong Post', 'Asia-Postal-Shipping' )),
+            'japan_post'    => array('code' => 'JP', 'label' => __( '🇯🇵 Japan Post', 'Asia-Postal-Shipping' )),
+            'korea_post_kr' => array('code' => 'KR', 'label' => __( '🇰🇷 Korea Post (South)', 'Asia-Postal-Shipping' )),
+            'macau_post'    => array('code' => 'MO', 'label' => __( '🇲🇴 CTT Macau', 'Asia-Postal-Shipping' )),
+            'mongol_post'   => array('code' => 'MN', 'label' => __( '🇲🇳 Mongol Post', 'Asia-Postal-Shipping' )),
         ),
         'Southeast Asia' => array(
             'phlpost'       => array('code' => 'PH', 'label' => __( '🇵🇭 PHLPost (Philippines)', 'Asia-Postal-Shipping' )),
-                                  'pos_indonesia' => array('code' => 'ID', 'label' => __( '🇮🇩 Pos Indonesia', 'Asia-Postal-Shipping' )),
-                                  'pos_malaysia'  => array('code' => 'MY', 'label' => __( '🇲🇾 Pos Malaysia', 'Asia-Postal-Shipping' )),
-                                  'singpost'      => array('code' => 'SG', 'label' => __( '🇸🇬 Singapore Post', 'Asia-Postal-Shipping' )),
-                                  'thailand_post' => array('code' => 'TH', 'label' => __( '🇹🇭 Thailand Post', 'Asia-Postal-Shipping' )),
-                                  'vietnam_post'  => array('code' => 'VN', 'label' => __( '🇻🇳 Vietnam Post', 'Asia-Postal-Shipping' )),
+            'pos_indonesia' => array('code' => 'ID', 'label' => __( '🇮🇩 Pos Indonesia', 'Asia-Postal-Shipping' )),
+            'pos_malaysia'  => array('code' => 'MY', 'label' => __( '🇲🇾 Pos Malaysia', 'Asia-Postal-Shipping' )),
+            'singpost'      => array('code' => 'SG', 'label' => __( '🇸🇬 Singapore Post', 'Asia-Postal-Shipping' )),
+            'thailand_post' => array('code' => 'TH', 'label' => __( '🇹🇭 Thailand Post', 'Asia-Postal-Shipping' )),
+            'vietnam_post'  => array('code' => 'VN', 'label' => __( '🇻🇳 Vietnam Post', 'Asia-Postal-Shipping' )),
         ),
         'South Asia' => array(
             'india_post'    => array('code' => 'IN', 'label' => __( '🇮🇳 India Post', 'Asia-Postal-Shipping' )),
-                              'pakistan_post' => array('code' => 'PK', 'label' => __( '🇵🇰 Pakistan Post', 'Asia-Postal-Shipping' )),
-                              'srilanka_post' => array('code' => 'LK', 'label' => __( '🇱🇰 Sri Lanka Post', 'Asia-Postal-Shipping' )),
+            'pakistan_post' => array('code' => 'PK', 'label' => __( '🇵🇰 Pakistan Post', 'Asia-Postal-Shipping' )),
+            'srilanka_post' => array('code' => 'LK', 'label' => __( '🇱🇰 Sri Lanka Post', 'Asia-Postal-Shipping' )),
         ),
         'West Asia & Middle East' => array(
             'emirates_post' => array('code' => 'AE', 'label' => __( '🇦🇪 Emirates Post', 'Asia-Postal-Shipping' )),
-                                           'ptt_turkey'    => array('code' => 'TR', 'label' => __( '🇹🇷 PTT (Turkey)', 'Asia-Postal-Shipping' )),
-                                           'saudi_post'    => array('code' => 'SA', 'label' => __( '🇸🇦 Saudi Post (SPL)', 'Asia-Postal-Shipping' )),
+            'ptt_turkey'    => array('code' => 'TR', 'label' => __( '🇹🇷 PTT (Turkey)', 'Asia-Postal-Shipping' )),
+            'saudi_post'    => array('code' => 'SA', 'label' => __( '🇸🇦 Saudi Post (SPL)', 'Asia-Postal-Shipping' )),
         ),
     );
 }
@@ -121,21 +125,21 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
             foreach ( $rules as $rule ) {
                 fputcsv($output, array(
                     isset($rule['label']) ? $rule['label'] : '',
-                                       isset($rule['country']) ? $rule['country'] : '',
-                                       isset($rule['state']) ? $rule['state'] : '*',
-                                       isset($rule['postcode']) ? $rule['postcode'] : '*',
-                                       isset($rule['shipping_class']) ? $rule['shipping_class'] : '*',
-                                       isset($rule['delivery_time']) ? $rule['delivery_time'] : '',
-                                       isset($rule['min_weight']) ? $rule['min_weight'] : '',
-                                       isset($rule['max_weight']) ? $rule['max_weight'] : '',
-                                       isset($rule['min_total']) ? $rule['min_total'] : '',
-                                       isset($rule['max_total']) ? $rule['max_total'] : '',
-                                       isset($rule['min_qty']) ? $rule['min_qty'] : '',
-                                       isset($rule['max_qty']) ? $rule['max_qty'] : '',
-                                       isset($rule['base_weight']) ? $rule['base_weight'] : 0,
-                                       isset($rule['base_cost']) ? $rule['base_cost'] : 0,
-                                       isset($rule['per_kg']) ? $rule['per_kg'] : 0,
-                                       isset($rule['enabled']) ? $rule['enabled'] : 'yes',
+                    isset($rule['country']) ? $rule['country'] : '',
+                    isset($rule['state']) ? $rule['state'] : '*',
+                    isset($rule['postcode']) ? $rule['postcode'] : '*',
+                    isset($rule['shipping_class']) ? $rule['shipping_class'] : '*',
+                    isset($rule['delivery_time']) ? $rule['delivery_time'] : '',
+                    isset($rule['min_weight']) ? $rule['min_weight'] : '',
+                    isset($rule['max_weight']) ? $rule['max_weight'] : '',
+                    isset($rule['min_total']) ? $rule['min_total'] : '',
+                    isset($rule['max_total']) ? $rule['max_total'] : '',
+                    isset($rule['min_qty']) ? $rule['min_qty'] : '',
+                    isset($rule['max_qty']) ? $rule['max_qty'] : '',
+                    isset($rule['base_weight']) ? $rule['base_weight'] : 0,
+                    isset($rule['base_cost']) ? $rule['base_cost'] : 0,
+                    isset($rule['per_kg']) ? $rule['per_kg'] : 0,
+                    isset($rule['enabled']) ? $rule['enabled'] : 'yes',
                 ));
             }
         }
@@ -150,7 +154,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
         $instance_id = isset($_REQUEST['instance_id']) ? absint($_REQUEST['instance_id']) : 0;
         $redirect_url = isset($_REQUEST['redirect_url']) ? esc_url_raw($_REQUEST['redirect_url']) : admin_url('admin.php?page=wc-settings&tab=shipping');
 
-        if ( isset( $_FILES['import_csv'] ) && ! empty( $_FILES['import_csv']['name'] ) ) {
+        // Added error checking for file upload
+        if ( isset( $_FILES['import_csv'] ) && ! empty( $_FILES['import_csv']['name'] ) && $_FILES['import_csv']['error'] === UPLOAD_ERR_OK ) {
             $file = $_FILES['import_csv']['tmp_name'];
             $file_info = pathinfo($_FILES['import_csv']['name']);
             if ( strtolower($file_info['extension']) !== 'csv' ) wp_die( 'Invalid file format. Please upload a CSV file.' );
@@ -160,7 +165,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 $header = fgetcsv($handle, 1000, ",");
                 $expected_header = asia_shipping_get_csv_headers();
                 // Simple Header Validation
-                if ( count($header) !== count($expected_header) || $header[0] !== 'Label' ) {
+                if ( ! $header || count($header) !== count($expected_header) || $header[0] !== 'Label' ) {
                     fclose($handle);
                     wp_die( __( '❌ Error: Invalid CSV format. Please export a new template to ensure headers match.', 'Asia-Postal-Shipping' ) );
                 }
@@ -169,21 +174,21 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                     $rules[] = array(
                         'label'         => sanitize_text_field($data[0]),
-                                     'country'       => sanitize_text_field($data[1]),
-                                     'state'         => sanitize_text_field($data[2]),
-                                     'postcode'      => isset($data[3]) ? sanitize_text_field($data[3]) : '*',
-                                     'shipping_class'=> isset($data[4]) ? sanitize_text_field($data[4]) : '*',
-                                     'delivery_time' => sanitize_text_field($data[5]),
-                                     'min_weight'    => floatval($data[6]),
-                                     'max_weight'    => sanitize_text_field($data[7]),
-                                     'min_total'     => floatval($data[8]),
-                                     'max_total'     => sanitize_text_field($data[9]),
-                                     'min_qty'       => floatval($data[10]),
-                                     'max_qty'       => sanitize_text_field($data[11]),
-                                     'base_weight'   => floatval($data[12]),
-                                     'base_cost'     => floatval($data[13]),
-                                     'per_kg'        => floatval($data[14]),
-                                     'enabled'       => isset($data[15]) ? sanitize_text_field($data[15]) : 'yes'
+                        'country'       => sanitize_text_field($data[1]),
+                        'state'         => sanitize_text_field($data[2]),
+                        'postcode'      => isset($data[3]) ? sanitize_text_field($data[3]) : '*',
+                        'shipping_class'=> isset($data[4]) ? sanitize_text_field($data[4]) : '*',
+                        'delivery_time' => sanitize_text_field($data[5]),
+                        'min_weight'    => floatval($data[6]),
+                        'max_weight'    => sanitize_text_field($data[7]),
+                        'min_total'     => floatval($data[8]),
+                        'max_total'     => sanitize_text_field($data[9]),
+                        'min_qty'       => floatval($data[10]),
+                        'max_qty'       => sanitize_text_field($data[11]),
+                        'base_weight'   => floatval($data[12]),
+                        'base_cost'     => floatval($data[13]),
+                        'per_kg'        => floatval($data[14]),
+                        'enabled'       => isset($data[15]) ? sanitize_text_field($data[15]) : 'yes'
                     );
                 }
                 fclose($handle);
@@ -192,7 +197,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                 $current_settings['rules'] = json_encode($rules);
                 update_option($option_key, $current_settings);
                 $redirect_url = add_query_arg( 'asia_import', 'success', $redirect_url );
+            } else {
+                 $redirect_url = add_query_arg( 'asia_import', 'error', $redirect_url );
             }
+        } else {
+            $redirect_url = add_query_arg( 'asia_import', 'error', $redirect_url );
         }
         wp_redirect( $redirect_url );
         exit;
@@ -237,105 +246,105 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $this->instance_form_fields = array(
                         'title' => array(
                             'title'       => __( 'Method Title', 'Asia-Postal-Shipping' ),
-                                         'type'        => 'text',
-                                         'description' => __( 'This controls the title which the user sees during checkout.', 'Asia-Postal-Shipping' ),
-                                         'default'     => __( 'Asia Post', 'Asia-Postal-Shipping' ),
-                                         'desc_tip'    => true,
+                            'type'        => 'text',
+                            'description' => __( 'This controls the title which the user sees during checkout.', 'Asia-Postal-Shipping' ),
+                            'default'     => __( 'Asia Post', 'Asia-Postal-Shipping' ),
+                            'desc_tip'    => true,
                         ),
                         'carrier_brand' => array(
                             'title'       => __( 'Postal Carrier', 'Asia-Postal-Shipping' ),
-                                                 'type'        => 'select',
-                                                 'description' => __( 'Select a carrier to enable smart defaults.', 'Asia-Postal-Shipping' ),
-                                                 'default'     => 'generic',
-                                                 'options'     => $carrier_options,
-                                                 'desc_tip'    => true,
+                            'type'        => 'select',
+                            'description' => __( 'Select a carrier to enable smart defaults.', 'Asia-Postal-Shipping' ),
+                            'default'     => 'generic',
+                            'options'     => $carrier_options,
+                            'desc_tip'    => true,
                         ),
                         'custom_carrier_label' => array(
                             'title'       => __( 'Custom Carrier Name', 'Asia-Postal-Shipping' ),
-                                                        'type'        => 'text',
-                                                        'default'     => __( 'Standard', 'Asia-Postal-Shipping' ),
-                                                        'placeholder' => __( 'e.g. Standard', 'Asia-Postal-Shipping' ),
-                                                        'description' => __( 'This name will be used as the label for new rules if "Generic / Custom" is selected.', 'Asia-Postal-Shipping' ),
-                                                        'desc_tip'    => true,
+                            'type'        => 'text',
+                            'default'     => __( 'Standard', 'Asia-Postal-Shipping' ),
+                            'placeholder' => __( 'e.g. Standard', 'Asia-Postal-Shipping' ),
+                            'description' => __( 'This name will be used as the label for new rules if "Generic / Custom" is selected.', 'Asia-Postal-Shipping' ),
+                            'desc_tip'    => true,
                         ),
                         'carrier_icon' => array(
                             'title'       => __( 'Custom Icon URL', 'Asia-Postal-Shipping' ),
-                                                'type'        => 'text',
-                                                'description' => __( 'Only used if "Generic / Custom" is selected.', 'Asia-Postal-Shipping' ),
-                                                'default'     => '',
-                                                'desc_tip'    => true,
+                            'type'        => 'text',
+                            'description' => __( 'Only used if "Generic / Custom" is selected.', 'Asia-Postal-Shipping' ),
+                            'default'     => '',
+                            'desc_tip'    => true,
                         ),
                         'tracking_url_pattern' => array(
                             'title'       => __( 'Tracking URL Pattern', 'Asia-Postal-Shipping' ),
-                                                        'type'        => 'text',
-                                                        'description' => __( 'Placeholder: {tracking_number}', 'Asia-Postal-Shipping' ),
-                                                        'default'     => '',
-                                                        'desc_tip'    => true,
+                            'type'        => 'text',
+                            'description' => __( 'Placeholder: {tracking_number}', 'Asia-Postal-Shipping' ),
+                            'default'     => '',
+                            'desc_tip'    => true,
                         ),
                         'calculation_mode' => array(
                             'title'       => __( 'Calculation Mode', 'Asia-Postal-Shipping' ),
-                                                    'type'        => 'select',
-                                                    'description' => __( 'Choose "Single Best Match" to stop at the first rule. Choose "Show All Matching Rates" to display multiple options (e.g. EMS vs Airmail).', 'Asia-Postal-Shipping' ),
-                                                    'default'     => 'single',
-                                                    'options'     => array(
-                                                        'single' => __( 'Single Best Match', 'Asia-Postal-Shipping' ),
-                                                                           'all'    => __( 'Show All Matching Rates', 'Asia-Postal-Shipping' ),
-                                                    ),
-                                                    'desc_tip'    => true,
+                            'type'        => 'select',
+                            'description' => __( 'Choose "Single Best Match" to stop at the first rule. Choose "Show All Matching Rates" to display multiple options (e.g. EMS vs Airmail).', 'Asia-Postal-Shipping' ),
+                            'default'     => 'single',
+                            'options'     => array(
+                                'single' => __( 'Single Best Match', 'Asia-Postal-Shipping' ),
+                                'all'    => __( 'Show All Matching Rates', 'Asia-Postal-Shipping' ),
+                            ),
+                            'desc_tip'    => true,
                         ),
                         'weight_step' => array(
                             'title'       => __( 'Weight Rounding Step (kg)', 'Asia-Postal-Shipping' ),
-                                               'type'        => 'number',
-                                               'custom_attributes' => array( 'step' => '0.01' ),
-                                               'default'     => '0',
-                                               'placeholder' => '0.5',
-                                               'description' => __( 'Round the final weight UP to the nearest step. E.g., if set to 0.5, a 1.1kg package becomes 1.5kg. Set to 0 to disable.', 'Asia-Postal-Shipping' ),
-                                               'desc_tip'    => true,
+                            'type'        => 'number',
+                            'custom_attributes' => array( 'step' => '0.01' ),
+                            'default'     => '0',
+                            'placeholder' => '0.5',
+                            'description' => __( 'Round the final weight UP to the nearest step. E.g., if set to 0.5, a 1.1kg package becomes 1.5kg. Set to 0 to disable.', 'Asia-Postal-Shipping' ),
+                            'desc_tip'    => true,
                         ),
                         'volumetric_divisor' => array(
                             'title'       => __( 'Volumetric Divisor', 'Asia-Postal-Shipping' ),
-                                                      'type'        => 'number',
-                                                      'default'     => '0',
-                                                      'placeholder' => '5000',
-                                                      'description' => __( 'Divisor for volumetric weight. Formula: (L x W x H) / Divisor. Common values: 5000 (DHL/FedEx), 6000 (Postal). Set to 0 to disable.', 'Asia-Postal-Shipping' ),
-                                                      'desc_tip'    => true,
+                            'type'        => 'number',
+                            'default'     => '0',
+                            'placeholder' => '5000',
+                            'description' => __( 'Divisor for volumetric weight. Formula: (L x W x H) / Divisor. Common values: 5000 (DHL/FedEx), 6000 (Postal). Set to 0 to disable.', 'Asia-Postal-Shipping' ),
+                            'desc_tip'    => true,
                         ),
                         'handling_fee' => array(
                             'title'       => sprintf( __( 'Handling / Service Fee (%s)', 'Asia-Postal-Shipping' ), $currency_symbol ),
-                                                'type'        => 'price',
-                                                'default'     => '0',
-                                                'description' => __( 'A fixed fee added to the total shipping cost.', 'Asia-Postal-Shipping' ),
-                                                'desc_tip'    => true,
+                            'type'        => 'price',
+                            'default'     => '0',
+                            'description' => __( 'A fixed fee added to the total shipping cost.', 'Asia-Postal-Shipping' ),
+                            'desc_tip'    => true,
                         ),
                         'free_shipping_threshold' => array(
                             'title'       => sprintf( __( 'Free Shipping Threshold (%s)', 'Asia-Postal-Shipping' ), $currency_symbol ),
-                                                           'type'        => 'price',
-                                                           'default'     => '0',
-                                                           'description' => __( 'If the cart total exceeds this amount, shipping becomes free.', 'Asia-Postal-Shipping' ),
-                                                           'desc_tip'    => true,
+                            'type'        => 'price',
+                            'default'     => '0',
+                            'description' => __( 'If the cart total exceeds this amount, shipping becomes free.', 'Asia-Postal-Shipping' ),
+                            'desc_tip'    => true,
                         ),
                         'debug_mode' => array(
                             'title'       => __( 'Debug Mode', 'Asia-Postal-Shipping' ),
-                                              'label'       => __( 'Enable Debugging', 'Asia-Postal-Shipping' ),
-                                              'type'        => 'checkbox',
-                                              'default'     => 'no',
-                                              'description' => __( 'If enabled, admins will see a log of shipping calculations on the cart page. Useful for troubleshooting rules.', 'Asia-Postal-Shipping' ),
-                                              'desc_tip'    => true,
+                            'label'       => __( 'Enable Debugging', 'Asia-Postal-Shipping' ),
+                            'type'        => 'checkbox',
+                            'default'     => 'no',
+                            'description' => __( 'If enabled, admins will see a log of shipping calculations on the cart page. Useful for troubleshooting rules.', 'Asia-Postal-Shipping' ),
+                            'desc_tip'    => true,
                         ),
                         'tax_status' => array(
                             'title'   => __( 'Tax Status', 'Asia-Postal-Shipping' ),
-                                              'type'    => 'select',
-                                              'class'   => 'wc-enhanced-select',
-                                              'default' => 'taxable',
-                                              'options' => array(
-                                                  'taxable' => __( 'Taxable', 'Asia-Postal-Shipping' ),
-                                                                 'none'    => __( 'None', 'Asia-Postal-Shipping' ),
-                                              ),
+                            'type'    => 'select',
+                            'class'   => 'wc-enhanced-select',
+                            'default' => 'taxable',
+                            'options' => array(
+                                'taxable' => __( 'Taxable', 'Asia-Postal-Shipping' ),
+                                'none'    => __( 'None', 'Asia-Postal-Shipping' ),
+                            ),
                         ),
                         'rules' => array(
                             'type'        => 'rules_table',
                             'title'       => __( 'Shipping Rules', 'Asia-Postal-Shipping' ),
-                                         'description' => __( 'Define your logic tree here.', 'Asia-Postal-Shipping' ),
+                            'description' => __( 'Define your logic tree here.', 'Asia-Postal-Shipping' ),
                         ),
                     );
                 }
@@ -357,9 +366,14 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             if ( count($range) === 2 ) {
                                 $min = preg_replace( '/[^0-9]/', '', $range[0] );
                                 $max = preg_replace( '/[^0-9]/', '', $range[1] );
-                                $user = preg_replace( '/[^0-9]/', '', $user_postcode );
-                                if ( is_numeric($min) && is_numeric($max) && is_numeric($user) ) {
-                                    if ( $user >= $min && $user <= $max ) return true;
+                                
+                                // FIX: Be careful stripping non-numerics from user input if ranges are intended for numeric zones
+                                // but the user is from a country with alphanumeric codes.
+                                // For this plugin (Asia Post), assuming numeric ranges is mostly safe, but we should verify.
+                                $user_numeric = preg_replace( '/[^0-9]/', '', $user_postcode );
+                                
+                                if ( is_numeric($min) && is_numeric($max) && is_numeric($user_numeric) && $user_numeric !== '' ) {
+                                    if ( $user_numeric >= $min && $user_numeric <= $max ) return true;
                                 }
                             }
                         } elseif ( strpos( $condition, '*' ) !== false ) {
@@ -392,6 +406,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         $icon_url = $this->get_option( 'carrier_icon' );
                     } else {
                         $filename = $carrier_brand . '.png';
+                        // Safety: ensure filename doesn't traverse directories (though generic brand list comes from hardcoded array)
                         if ( file_exists( plugin_dir_path( __FILE__ ) . 'icons/' . $filename ) ) {
                             $icon_url = plugin_dir_url( __FILE__ ) . 'icons/' . $filename;
                         }
@@ -514,9 +529,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                         $this->add_rate( array(
                             'id'      => $this->get_rate_id() . '_' . $rule_num,
-                                               'label'   => $label,
-                                               'cost'    => $shipping_total,
-                                               'package' => $package,
+                            'label'   => $label,
+                            'cost'    => $shipping_total,
+                            'package' => $package,
                         ));
 
                         if ( $calculation_mode !== 'all' ) break;
@@ -946,39 +961,47 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             }
                         }
 
+                        // Helper to escape HTML to prevent XSS
+                        function esc_attr(str) {
+                            if (!str) return '';
+                            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        }
+
                         // Build Row HTML Helper
                         function buildRowHtml( data ) {
                             var classOptions = '';
-                    $.each(asia_shipping_classes, function(slug, name) {
-                        var selected = (data.shipping_class == slug) ? 'selected' : '';
-                    classOptions += '<option value="'+slug+'" '+selected+'>'+name+'</option>';
-                    });
-                    var d = Object.assign({
-                        label: '', country: '', state: '*', postcode: '*',
-                        delivery_time: '', min_weight: 0, max_weight: '*',
-                        min_total: 0, max_total: '*', min_qty: 0, max_qty: '*',
-                        base_weight: 0, base_cost: 0, per_kg: 0
-                    }, data);
+                            $.each(asia_shipping_classes, function(slug, name) {
+                                var selected = (data.shipping_class == slug) ? 'selected' : '';
+                                classOptions += '<option value="'+slug+'" '+selected+'>'+name+'</option>';
+                            });
+                            
+                            var d = Object.assign({
+                                label: '', country: '', state: '*', postcode: '*',
+                                delivery_time: '', min_weight: 0, max_weight: '*',
+                                min_total: 0, max_total: '*', min_qty: 0, max_qty: '*',
+                                base_weight: 0, base_cost: 0, per_kg: 0
+                            }, data);
 
-                    return '<tr class="asia-rule-row">' +
-                    '<td style="text-align:center; vertical-align:middle;"><input type="checkbox" class="asia-select-row"></td>' +
-                    '<td class="asia-sort-handle"><span class="dashicons dashicons-menu"></span><span class="asia-row-index"></span></td>' +
-                    '<td><input type="text" class="asia-rule-input" name="rule_label[]" value="' + d.label + '"></td>' +
-                    '<td class="country-cell"><input type="text" class="asia-rule-input rule-country-input" name="rule_country[]" value="' + d.country + '" placeholder="JP"></td>' +
-                    '<td class="state-cell"><input type="text" class="asia-rule-input rule-state-input" name="rule_state[]" value="' + d.state + '" placeholder="*"></td>' +
-                    '<td><input type="text" class="asia-rule-input" name="rule_postcode[]" value="' + d.postcode + '" placeholder="*"></td>' +
-                    '<td><select class="asia-rule-input" name="rule_shipping_class[]">' + classOptions + '</select></td>' +
-                    '<td><input type="text" class="asia-rule-input" name="rule_delivery_time[]" value="' + d.delivery_time + '"></td>' +
-                    '<td><div class="asia-input-group"><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_min_weight[]" placeholder="0" value="' + d.min_weight + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_weight[]" placeholder="*" value="' + d.max_weight + '"></div></td>' +
-                    '<td><div class="asia-input-group"><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_min_total[]" placeholder="0" value="' + d.min_total + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_total[]" placeholder="*" value="' + d.max_total + '"></div></td>' +
-                    '<td><div class="asia-input-group"><input type="number" step="1" class="asia-rule-input asia-rule-small" name="rule_min_qty[]" placeholder="0" value="' + d.min_qty + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_qty[]" placeholder="*" value="' + d.max_qty + '"></div></td>' +
-                    '<td><input type="number" step="0.01" class="asia-rule-input" name="rule_base_weight[]" value="' + d.base_weight + '"></td>' +
-                    '<td><div style="display:grid; gap:5px;"><div class="asia-input-group"><span style="white-space:nowrap;">' + asia_i18n.base + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_base_cost[]" value="' + d.base_cost + '"></div><div class="asia-input-group"><span style="white-space:nowrap;">' + asia_i18n.per_kg + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_per_kg[]" value="' + d.per_kg + '"></div></div></td>' +
-                    '<td class="asia-action-cell">' +
-                    '<span class="dashicons dashicons-admin-page asia-duplicate-btn duplicate-row tips" data-tip="' + asia_i18n.duplicate_tip + '"></span>' +
-                    '<span class="dashicons dashicons-trash asia-remove-btn remove-row tips" data-tip="' + asia_i18n.remove_tip + '"></span>' +
-                    '</td>' +
-                    '</tr>';
+                            // FIXED: Use esc_attr to sanitize values before inserting into HTML
+                            return '<tr class="asia-rule-row">' +
+                            '<td style="text-align:center; vertical-align:middle;"><input type="checkbox" class="asia-select-row"></td>' +
+                            '<td class="asia-sort-handle"><span class="dashicons dashicons-menu"></span><span class="asia-row-index"></span></td>' +
+                            '<td><input type="text" class="asia-rule-input" name="rule_label[]" value="' + esc_attr(d.label) + '"></td>' +
+                            '<td class="country-cell"><input type="text" class="asia-rule-input rule-country-input" name="rule_country[]" value="' + esc_attr(d.country) + '" placeholder="JP"></td>' +
+                            '<td class="state-cell"><input type="text" class="asia-rule-input rule-state-input" name="rule_state[]" value="' + esc_attr(d.state) + '" placeholder="*"></td>' +
+                            '<td><input type="text" class="asia-rule-input" name="rule_postcode[]" value="' + esc_attr(d.postcode) + '" placeholder="*"></td>' +
+                            '<td><select class="asia-rule-input" name="rule_shipping_class[]">' + classOptions + '</select></td>' +
+                            '<td><input type="text" class="asia-rule-input" name="rule_delivery_time[]" value="' + esc_attr(d.delivery_time) + '"></td>' +
+                            '<td><div class="asia-input-group"><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_min_weight[]" placeholder="0" value="' + esc_attr(d.min_weight) + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_weight[]" placeholder="*" value="' + esc_attr(d.max_weight) + '"></div></td>' +
+                            '<td><div class="asia-input-group"><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_min_total[]" placeholder="0" value="' + esc_attr(d.min_total) + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_total[]" placeholder="*" value="' + esc_attr(d.max_total) + '"></div></td>' +
+                            '<td><div class="asia-input-group"><input type="number" step="1" class="asia-rule-input asia-rule-small" name="rule_min_qty[]" placeholder="0" value="' + esc_attr(d.min_qty) + '"><span>-</span><input type="text" class="asia-rule-input asia-rule-small" name="rule_max_qty[]" placeholder="*" value="' + esc_attr(d.max_qty) + '"></div></td>' +
+                            '<td><input type="number" step="0.01" class="asia-rule-input" name="rule_base_weight[]" value="' + esc_attr(d.base_weight) + '"></td>' +
+                            '<td><div style="display:grid; gap:5px;"><div class="asia-input-group"><span style="white-space:nowrap;">' + asia_i18n.base + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_base_cost[]" value="' + esc_attr(d.base_cost) + '"></div><div class="asia-input-group"><span style="white-space:nowrap;">' + asia_i18n.per_kg + '</span><input type="number" step="0.01" class="asia-rule-input asia-rule-small" name="rule_per_kg[]" value="' + esc_attr(d.per_kg) + '"></div></div></td>' +
+                            '<td class="asia-action-cell">' +
+                            '<span class="dashicons dashicons-admin-page asia-duplicate-btn duplicate-row tips" data-tip="' + asia_i18n.duplicate_tip + '"></span>' +
+                            '<span class="dashicons dashicons-trash asia-remove-btn remove-row tips" data-tip="' + asia_i18n.remove_tip + '"></span>' +
+                            '</td>' +
+                            '</tr>';
                         }
 
                         $(document).on('change keyup blur', '.asia-rule-input, .rule-state-input', function() { serializeRules(); });
