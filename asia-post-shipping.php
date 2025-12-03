@@ -3,7 +3,7 @@
  * Plugin Name: Asia Postal & Table Rate Shipping (Fixed)
  * Plugin URI:  https://example.com/asia-post-shipping
  * Description: A specialized shipping method for Asian Postal Carriers (Japan Post, China Post, Pos Indonesia, etc.) featuring a tree-table rate logic engine.
- * Version:     2.9.3
+ * Version:     2.9.1
  * Author:      S.J Consulting Group Asia
  * Author URI:  https://google.com
  * Text Domain: Asia-Postal-Shipping
@@ -264,9 +264,8 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             'type'              => 'number',
                             'custom_attributes' => array( 'step' => '0.000001' ),
                             'default'           => '1',
-                            // UPDATED: Added colored HTML for better visibility as per request
-                            'description'       => __( '<span style="color:#d63638; font-weight:bold;">⚠️ IMPORTANT:</span> If your store currency is different from the carrier currency, you <strong style="color:#2271b1;">MUST</strong> enter the multiplier here. <br/>Example: Store is USD, Carrier is THB (Baht). Rate = 0.028.', 'Asia-Postal-Shipping' ),
-                            'desc_tip'          => false, // False ensures description displays inline
+                            'description'       => __( 'Multiplier to convert the carrier rate to your store currency. Example: If rules are in THB and store is USD, enter 0.028. Leave as 1 if currencies match.', 'Asia-Postal-Shipping' ),
+                            'desc_tip'          => true,
                         ),
                         'custom_carrier_label' => array(
                             'title'       => __( 'Custom Carrier Name', 'Asia-Postal-Shipping' ),
@@ -566,7 +565,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     $js_carrier_id = $id_prefix . 'carrier_brand';
                     $js_custom_label_id = $id_prefix . 'custom_carrier_label';
                     $js_carrier_icon_id = $id_prefix . 'carrier_icon';
-                    $js_exchange_rate_id = $id_prefix . 'exchange_rate'; // Added this line
 
                     $currency_symbol = get_woocommerce_currency_symbol();
                     
@@ -826,13 +824,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     var asia_shipping_classes = <?php echo json_encode( $wc_shipping_classes ); ?>;
                     var asia_currencies = <?php echo json_encode( $carrier_currencies ); ?>;
                     var asia_flags = <?php echo json_encode( $carrier_flags ); ?>;
-                    var asia_store_currency = '<?php echo esc_js( get_woocommerce_currency() ); ?>'; // Added store currency here
 
                     // DYNAMIC IDs from PHP
                     var carrier_field_id = '<?php echo esc_js( $id_prefix . 'carrier_brand' ); ?>';
                     var custom_label_field_id = '<?php echo esc_js( $id_prefix . 'custom_carrier_label' ); ?>';
                     var carrier_icon_field_id = '<?php echo esc_js( $id_prefix . 'carrier_icon' ); ?>';
-                    var exchange_rate_field_id = '<?php echo esc_js( $js_exchange_rate_id ); ?>'; // Added this line
 
                     // JS Currency Logic
                     var js_currency_symbol = '<?php echo esc_js( $currency_symbol ); ?>';
@@ -874,49 +870,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                             handle: '.asia-sort-handle', cursor: 'move', axis: 'y',
                             update: function(event, ui) { serializeRules(); }
                         });
-
-                        function checkExchangeWarning() {
-                            var carrier = $('#' + carrier_field_id).val();
-                            var rate = parseFloat($('#' + exchange_rate_field_id).val());
-                            var $rateField = $('#' + exchange_rate_field_id);
-                            // WooCommerce fields usually wrapped in td.forminp
-                            var $wrapper = $rateField.closest('td');
-
-                            // Remove existing warning
-                            $wrapper.find('.asia-rate-warning').remove();
-
-                            if ( carrier !== 'generic' && ( isNaN(rate) || rate === 1 ) ) {
-                                // NEW LOGIC: Check against Store Currency
-                                // We need a mapping of carrier -> currency code (e.g. 'thailand_post' -> 'THB')
-                                // Since we only passed 'asia_currencies' which has SYMBOLS (฿), not codes (THB), 
-                                // we need a mapping of symbols to codes OR rely on the fact that if the SYMBOL matches the store currency symbol, we are good.
-                                // However, store currency is 'THB', carrier map has '฿'. Mapping is tricky.
-                                // simpler approach: If carrier is 'thailand_post' and store currency is 'THB', skip warning.
-                                
-                                // Let's build a quick mapping for the check based on known carriers
-                                var carrierCurrencyMap = {
-                                    'china_post': 'CNY', 'chunghwa_post': 'TWD', 'hongkong_post': 'HKD', 'japan_post': 'JPY',
-                                    'korea_post_kr': 'KRW', 'macau_post': 'MOP', 'mongol_post': 'MNT',
-                                    'phlpost': 'PHP', 'pos_indonesia': 'IDR', 'pos_malaysia': 'MYR', 'singpost': 'SGD',
-                                    'thailand_post': 'THB', 'vietnam_post': 'VND',
-                                    'india_post': 'INR', 'pakistan_post': 'PKR', 'srilanka_post': 'LKR',
-                                    'emirates_post': 'AED', 'ptt_turkey': 'TRY', 'saudi_post': 'SAR'
-                                };
-
-                                var carrierCode = carrierCurrencyMap[carrier];
-                                
-                                // If we know the carrier's code AND it matches the store currency, STOP.
-                                if ( carrierCode && carrierCode === asia_store_currency ) {
-                                    return; // No warning needed
-                                }
-
-                                var msg = '<div class="asia-rate-warning" style="color:#d63638; margin-top:5px; font-weight:bold; background:#fff5f5; padding:8px; border-left:3px solid #d63638; display:inline-block;">';
-                                msg += '⚠️ Warning: You selected a foreign carrier (' + carrier.replace(/_/g, ' ').toUpperCase() + ') but Exchange Rate is 1.<br/>';
-                                msg += '<span style="font-weight:normal;">If your store currency matches the carrier, ignore this. Otherwise, please update the rate.</span>';
-                                msg += '</div>';
-                                $wrapper.append(msg);
-                            }
-                        }
 
                         function toggleCustomLabel() {
                             // FUZZY SELECTOR: Finds select ending in carrier_brand
@@ -995,12 +948,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
                         // Init
                         toggleCustomLabel();
-                        checkExchangeWarning(); // Run check on load
-
-                        // Bind listeners for Warning
-                        $('#' + carrier_field_id).change(checkExchangeWarning);
-                        $('#' + exchange_rate_field_id).on('keyup change', checkExchangeWarning);
-
                         // Bind change event to fuzzy selector
                         $('select').filter(function() {
                             return this.id.match(/carrier_brand$/);
