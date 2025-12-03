@@ -1249,8 +1249,20 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                                         // updateCountryInput will handle the trim.
                                         var newRow = $(buildRowHtml(zone));
                                         $('#asia_post_rules_tbody').append(newRow); // Append individually to init select2 on each
-                                        updateCountryInput(newRow); // Init Country Select2 (Handles trim)
-                                    updateStateInput(newRow); // Init State Select2
+                                        
+                                        // CRITICAL FIX: Ensure country input is initialized first so state input knows the context
+                                        updateCountryInput(newRow); 
+                                        
+                                        // CRITICAL FIX: Manually set the state value on the new row's state input
+                                        // Because buildRowHtml sets the 'value' attribute, but updateStateInput might reset it
+                                        // or Select2 might need a specific trigger.
+                                        var stateInput = newRow.find('.rule-state-input');
+                                        // Ensure we use the raw string from JSON, trimmed
+                                        var stateVal = zone.state || '*';
+                                        stateInput.val(stateVal);
+
+                                        // Now trigger updateStateInput to convert text to Select2 if needed
+                                        updateStateInput(newRow); 
                                     });
 
                                     // SAVE ONLY ONCE AT THE END
