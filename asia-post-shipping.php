@@ -3,7 +3,7 @@
  * Plugin Name: Asia Postal & Table Rate Shipping 
  * Plugin URI:  https://example.com/asia-post-shipping
  * Description: A specialized shipping method for Asian Postal Carriers (Japan Post, China Post, Pos Indonesia, etc.) featuring a tree-table rate logic engine.
- * Version:     2.9.4
+ * Version:     2.9.5
  * Author:      S.J Consulting Group Asia
  * Author URI:  https://google.com
  * Text Domain: Asia-Postal-Shipping
@@ -718,7 +718,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('2-letter country code (e.g. JP, CN).', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 10%;">
-                    <?php esc_html_e('Province/State', 'Asia-Postal-Shipping'); ?>
+                    <?php esc_html_e('Province(s)/States', 'Asia-Postal-Shipping'); ?>
                     <span class="woocommerce-help-tip" data-tip="<?php esc_attr_e('Enter * for all, or select specific states.', 'Asia-Postal-Shipping'); ?>"></span>
                     </th>
                     <th style="width: 9%;">
@@ -1087,7 +1087,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                         var selectHtml = '<select multiple="multiple" class="asia-rule-input rule-state-input wc-enhanced-select" name="rule_state[]">';
                     selectHtml += '<option value="*">' + asia_i18n.any_state + '</option>';
                     var selectedValues = [];
-                    if ( typeof currentValue === 'string' ) selectedValues = currentValue.split(',');
+                    // FIXED: Trim whitespace from state values to fix loading bug
+                    if ( typeof currentValue === 'string' ) {
+                        selectedValues = currentValue.split(',').map(function(item){ return item.trim(); });
+                    }
                     else if ( Array.isArray(currentValue) ) selectedValues = currentValue;
 
                     $.each(states, function(code, name) {
