@@ -3,7 +3,7 @@
  * Plugin Name: Asia Postal & Table Rate Shipping 
  * Plugin URI:  https://example.com/asia-post-shipping
  * Description: A specialized shipping method for Asian Postal Carriers (Japan Post, China Post, Pos Indonesia, etc.) featuring a tree-table rate logic engine.
- * Version:     2.9.7
+ * Version:     2.9.8
  * Author:      S.J Consulting Group Asia
  * Author URI:  https://google.com
  * Text Domain: Asia-Postal-Shipping
@@ -1094,8 +1094,16 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
                     else if ( Array.isArray(currentValue) ) selectedValues = currentValue;
 
                     $.each(states, function(code, name) {
-                        var isSelected = ( $.inArray(code, selectedValues) !== -1 ) ? 'selected' : '';
-                    selectHtml += '<option value="'+code+'" '+isSelected+'>'+name+'</option>';
+                        // Check direct match (e.g. "AC") OR match with prefix (e.g. "ID-AC")
+                        var isSelected = false;
+                        if ( $.inArray(code, selectedValues) !== -1 ) isSelected = true;
+                        if ( !isSelected && singleCode ) {
+                             var prefixed = singleCode + '-' + code;
+                             if ( $.inArray(prefixed, selectedValues) !== -1 ) isSelected = true;
+                        }
+                        
+                        var selectedAttr = isSelected ? 'selected' : '';
+                        selectHtml += '<option value="'+code+'" '+selectedAttr+'>'+name+'</option>';
                     });
                     selectHtml += '</select>';
                     stateCell.html(selectHtml);
